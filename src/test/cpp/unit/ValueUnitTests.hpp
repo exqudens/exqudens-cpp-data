@@ -1,0 +1,43 @@
+#pragma once
+
+#include <string>
+#include <filesystem>
+
+#include <gtest/gtest.h>
+
+#include "TestUtils.hpp"
+#include "exqudens/data/Value.hpp"
+
+#define CALL_INFO std::string(__FUNCTION__) + "(" + std::filesystem::path(__FILE__).filename().string() + ":" + std::to_string(__LINE__) + ")"
+
+class ValueUnitTests : public testing::Test {
+
+    protected:
+
+        inline static const char* LOGGER_ID = "ValueUnitTests";
+
+};
+
+TEST_F(ValueUnitTests, test_1) {
+    try {
+        std::string testGroup = testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
+        std::string testCase = testing::UnitTest::GetInstance()->current_test_info()->name();
+        std::cout << LOGGER_ID << " " << '"' << testGroup << '.' << testCase << '"' << " bgn" << std::endl;
+
+        std::string expected = "Abc123!";
+        std::cout << LOGGER_ID << " expected: '" << expected << "'" << std::endl;
+
+        exqudens::data::Value value = exqudens::data::Value()
+        .setString(expected);
+        std::string actual = value.getString();
+        std::cout << LOGGER_ID << " actual: '" << actual << "'" << std::endl;
+
+        ASSERT_TRUE(expected == actual);
+
+        std::cout << LOGGER_ID << " " << '"' << testGroup << '.' << testCase << '"' << " end" << std::endl;
+    } catch (const std::exception& e) {
+        std::string errorMessage = TestUtils::toString(e);
+        std::cout << LOGGER_ID << " ERROR: " << errorMessage << std::endl;
+        FAIL() << errorMessage;
+    }
+}
