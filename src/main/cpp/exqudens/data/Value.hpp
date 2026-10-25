@@ -31,7 +31,11 @@ namespace exqudens::data {
 
             Value& setArray(const std::vector<exqudens::data::Value>& value);
 
+            Value& setArray();
+
             Value& setObject(const std::map<std::string, exqudens::data::Value>& value);
+
+            Value& setObject();
 
             bool isNull() const;
 
@@ -47,21 +51,25 @@ namespace exqudens::data {
 
             bool isObject() const;
 
-            std::nullptr_t getNull() const;
+            Value& ifArrayAdd(const exqudens::data::Value& value);
 
-            bool getBoolean() const;
+            Value& ifObjectSet(const std::string& key, const exqudens::data::Value& value);
 
-            long double getNumber() const;
+            std::nullptr_t asNull() const;
 
-            intmax_t getInteger() const;
+            bool asBoolean() const;
 
-            std::string getString() const;
+            long double asNumber() const;
 
-            std::vector<exqudens::data::Value> getArray() const;
+            intmax_t asInteger() const;
 
-            std::map<std::string, exqudens::data::Value> getObject() const;
+            std::string asString() const;
 
-            std::variant<std::nullptr_t, bool, long double, intmax_t, std::string, std::vector<exqudens::data::Value>, std::map<std::string, exqudens::data::Value>> getData() const;
+            std::vector<exqudens::data::Value> asArray() const;
+
+            std::map<std::string, exqudens::data::Value> asObject() const;
+
+            std::variant<std::nullptr_t, bool, long double, intmax_t, std::string, std::vector<exqudens::data::Value>, std::map<std::string, exqudens::data::Value>> asVariant() const;
 
             bool operator==(const Value& other) const;
 
@@ -103,7 +111,19 @@ namespace exqudens::data {
         return *this;
     }
 
+    EXQUDENS_JSON_INLINE Value& Value::setArray() {
+        std::vector<exqudens::data::Value> value = {};
+        data = value;
+        return *this;
+    }
+
     EXQUDENS_JSON_INLINE Value& Value::setObject(const std::map<std::string, exqudens::data::Value>& value) {
+        data = value;
+        return *this;
+    }
+
+    EXQUDENS_JSON_INLINE Value& Value::setObject() {
+        std::map<std::string, exqudens::data::Value> value = {};
         data = value;
         return *this;
     }
@@ -136,35 +156,49 @@ namespace exqudens::data {
         return std::holds_alternative<std::map<std::string, exqudens::data::Value>>(data);
     }
 
-    EXQUDENS_JSON_INLINE std::nullptr_t Value::getNull() const {
+    EXQUDENS_JSON_INLINE Value& Value::ifArrayAdd(const exqudens::data::Value& value) {
+        if (isArray()) {
+            std::get<std::vector<exqudens::data::Value>>(data).emplace_back(value);
+        }
+        return *this;
+    }
+
+    EXQUDENS_JSON_INLINE Value& Value::ifObjectSet(const std::string& key, const exqudens::data::Value& value) {
+        if (isObject()) {
+            std::get<std::map<std::string, exqudens::data::Value>>(data).insert_or_assign(key, value);
+        }
+        return *this;
+    }
+
+    EXQUDENS_JSON_INLINE std::nullptr_t Value::asNull() const {
         return std::get<std::nullptr_t>(data);
     }
 
-    EXQUDENS_JSON_INLINE bool Value::getBoolean() const {
+    EXQUDENS_JSON_INLINE bool Value::asBoolean() const {
         return std::get<bool>(data);
     }
 
-    EXQUDENS_JSON_INLINE long double Value::getNumber() const {
+    EXQUDENS_JSON_INLINE long double Value::asNumber() const {
         return std::get<long double>(data);
     }
 
-    EXQUDENS_JSON_INLINE intmax_t Value::getInteger() const {
+    EXQUDENS_JSON_INLINE intmax_t Value::asInteger() const {
         return std::get<intmax_t>(data);
     }
 
-    EXQUDENS_JSON_INLINE std::string Value::getString() const {
+    EXQUDENS_JSON_INLINE std::string Value::asString() const {
         return std::get<std::string>(data);
     }
 
-    EXQUDENS_JSON_INLINE std::vector<exqudens::data::Value> Value::getArray() const {
+    EXQUDENS_JSON_INLINE std::vector<exqudens::data::Value> Value::asArray() const {
         return std::get<std::vector<exqudens::data::Value>>(data);
     }
 
-    EXQUDENS_JSON_INLINE std::map<std::string, exqudens::data::Value> Value::getObject() const {
+    EXQUDENS_JSON_INLINE std::map<std::string, exqudens::data::Value> Value::asObject() const {
         return std::get<std::map<std::string, exqudens::data::Value>>(data);
     }
 
-    EXQUDENS_JSON_INLINE std::variant<std::nullptr_t, bool, long double, intmax_t, std::string, std::vector<exqudens::data::Value>, std::map<std::string, exqudens::data::Value>> Value::getData() const {
+    EXQUDENS_JSON_INLINE std::variant<std::nullptr_t, bool, long double, intmax_t, std::string, std::vector<exqudens::data::Value>, std::map<std::string, exqudens::data::Value>> Value::asVariant() const {
         return data;
     }
 

@@ -33,7 +33,11 @@ if("${CMAKE_UTIL_FILE}" STREQUAL "")
                     COMMAND_ERROR_IS_FATAL "ANY"
                 )]]
                 execute_process(
-                    COMMAND "${CONAN_COMMAND}" "install" "--tool-requires=exqudens-cmake/0.0.1@${CONAN_USER}/${CONAN_CHANNEL}" "--deployer" "direct_deploy" "--deployer-folder" "${CMAKE_SOURCE_DIR}/build/dependencies"
+                    COMMAND "${CONAN_COMMAND}" "install"
+                            "--envs-generation" "false"
+                            "--tool-requires" "exqudens-cmake/0.0.1@${CONAN_USER}/${CONAN_CHANNEL}"
+                            "--deployer" "direct_deploy"
+                            "--deployer-folder" "${CMAKE_SOURCE_DIR}/build/dependencies"
                     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
                     COMMAND_ECHO "STDOUT"
                     ENCODING "UTF-8"
@@ -256,6 +260,7 @@ if("${USE_CONAN}")
             )]]
             execute_process(
                 COMMAND "${CONAN_COMMAND}" "install"
+                        "--envs-generation" "false"
                         "--output-folder" "${CONAN_INSTALL_PREFIX}/test"
                         ${CONAN_SETTINGS}
                         ${CONAN_OPTIONS}

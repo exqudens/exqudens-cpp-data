@@ -24,15 +24,24 @@ TEST_F(ValueUnitTests, test_1) {
         std::string testCase = testing::UnitTest::GetInstance()->current_test_info()->name();
         std::cout << LOGGER_ID << " " << '"' << testGroup << '.' << testCase << '"' << " bgn" << std::endl;
 
-        std::string expected = "Abc123!";
-        std::cout << LOGGER_ID << " expected: '" << expected << "'" << std::endl;
+        intmax_t expectedInteger = 123;
+        std::cout << LOGGER_ID << " expectedInteger: '" << expectedInteger << std::endl;
+
+        std::string expectedString = "Abc123!";
+        std::cout << LOGGER_ID << " expectedString: '" << expectedString << "'" << std::endl;
 
         exqudens::data::Value value = exqudens::data::Value()
-        .setString(expected);
-        std::string actual = value.getString();
-        std::cout << LOGGER_ID << " actual: '" << actual << "'" << std::endl;
+        .setObject()
+        .ifObjectSet("id", exqudens::data::Value().setInteger(expectedInteger))
+        .ifObjectSet("name", exqudens::data::Value().setString(expectedString));
 
-        ASSERT_TRUE(expected == actual);
+        std::cout << LOGGER_ID << " value.isObject: " << value.isObject() << std::endl;
+        std::cout << LOGGER_ID << " value['id']: " << value.asObject().at("id").asInteger() << std::endl;
+        std::cout << LOGGER_ID << " value['name']: '" << value.asObject().at("name").asString() << "'" << std::endl;
+
+        ASSERT_TRUE(value.isObject());
+        ASSERT_TRUE(expectedInteger == value.asObject().at("id").asInteger());
+        ASSERT_TRUE(expectedString == value.asObject().at("name").asString());
 
         std::cout << LOGGER_ID << " " << '"' << testGroup << '.' << testCase << '"' << " end" << std::endl;
     } catch (const std::exception& e) {
